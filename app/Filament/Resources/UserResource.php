@@ -10,12 +10,15 @@ use App\Models\State;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\FormsComponent;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -34,7 +37,7 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Section::make('Personal Info')
-                    ->columns(3)
+                    ->columns(2)
                     // ->compact()
                     // ->collapsible()
                     // ->description('Prevent abuse by limiting the number of requests per period')
@@ -42,25 +45,25 @@ class UserResource extends Resource
                     // ->collapsed()
                     ->schema([
                         // ...
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
+                        TextInput::make('email')
                             ->email()
                             ->required()
                             ->maxLength(255),
                         // Forms\Components\DateTimePicker::make('email_verified_at'),
-                        Forms\Components\TextInput::make('password')
+                        TextInput::make('password')
                             ->password()
                             ->hiddenOn('edit')
                             ->required()
                             ->maxLength(255),
                     ]),
                 Section::make('Address Info')
-                    ->columns(3)
+                    ->columns(2)
                     ->schema([
                         // ...
-                        Forms\Components\Select::make('country_id')
+                        Select::make('country_id')
                             ->relationship(name: 'country', titleAttribute: 'name')
                             ->searchable()
                             ->preload()
@@ -70,7 +73,8 @@ class UserResource extends Resource
                                 $set('city_id', NULL);
                             })
                             ->required(),
-                        Forms\Components\Select::make('state_id')
+                        Select::make('state_id')
+                        ->relationship(name: 'state', titleAttribute: 'name')
                             ->options(fn(Get $get): Collection => State::query()
                                 ->where('country_id', $get('country_id'))
                                 ->pluck('name', 'id'))
@@ -81,7 +85,8 @@ class UserResource extends Resource
                                 $set('city_id', NULL);
                             })
                             ->required(),
-                        Forms\Components\Select::make('city_id')
+                        Select::make('city_id')
+                        ->relationship(name: 'city', titleAttribute: 'name')
                             ->options(fn(Get $get): Collection => City::query()
                                 ->where('state_id', $get('state_id'))
                                 ->pluck('name', 'id'))
@@ -90,9 +95,9 @@ class UserResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required(),
-                        Forms\Components\TextInput::make('address')
+                        TextInput::make('address')
                             ->required(),
-                        Forms\Components\TextInput::make('postal_code')
+                        TextInput::make('postal_code')
                             ->required(),
                     ])
             ]);
@@ -102,39 +107,39 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('address')
+                TextColumn::make('email')
+                ->searchable(),
+                TextColumn::make('country.name')
                     ->sortable()
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('postal_code')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: false),
-                // Tables\Columns\TextColumn::make('country_id')
-                //     ->sortable()
-                //     ->searchable()
-                //     ->toggleable(isToggledHiddenByDefault:false),
+                    ->toggleable(isToggledHiddenByDefault:false),
                 // Tables\Columns\TextColumn::make('state_id')
                 //     ->sortable()
                 //     ->searchable()
                 //     ->toggleable(isToggledHiddenByDefault:false),
-                // Tables\Columns\TextColumn::make('city_id')
+                // TextColumn::make('city_id')
                 //     ->sortable()
                 //     ->searchable()
                 //     ->toggleable(isToggledHiddenByDefault:false),
-                Tables\Columns\TextColumn::make('email_verified_at')
+                TextColumn::make('address')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('postal_code')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
