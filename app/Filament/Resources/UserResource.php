@@ -74,7 +74,7 @@ class UserResource extends Resource
                             })
                             ->required(),
                         Select::make('state_id')
-                        ->relationship(name: 'state', titleAttribute: 'name')
+                            ->relationship(name: 'state', titleAttribute: 'name')
                             ->options(fn(Get $get): Collection => State::query()
                                 ->where('country_id', $get('country_id'))
                                 ->pluck('name', 'id'))
@@ -86,7 +86,7 @@ class UserResource extends Resource
                             })
                             ->required(),
                         Select::make('city_id')
-                        ->relationship(name: 'city', titleAttribute: 'name')
+                            ->relationship(name: 'city', titleAttribute: 'name')
                             ->options(fn(Get $get): Collection => City::query()
                                 ->where('state_id', $get('state_id'))
                                 ->pluck('name', 'id'))
@@ -110,19 +110,19 @@ class UserResource extends Resource
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('email')
-                ->searchable(),
+                    ->searchable(),
                 TextColumn::make('country.name')
                     ->sortable()
                     ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                Tables\Columns\TextColumn::make('state.name')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('city.name')
+                    ->sortable()
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault:false),
-                // Tables\Columns\TextColumn::make('state_id')
-                //     ->sortable()
-                //     ->searchable()
-                //     ->toggleable(isToggledHiddenByDefault:false),
-                // TextColumn::make('city_id')
-                //     ->sortable()
-                //     ->searchable()
-                //     ->toggleable(isToggledHiddenByDefault:false),
                 TextColumn::make('address')
                     ->sortable()
                     ->searchable()
@@ -149,6 +149,7 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -29,4 +29,4 @@
     - `php artisan make:migration add_address_fields_to_users_table`
 
 
-6.- 59:00
+8.-
