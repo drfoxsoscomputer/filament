@@ -24,7 +24,7 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
+            // ->default()
             ->brandName('Intranet')
             ->id('admin')
             ->path('admin')
@@ -32,7 +32,6 @@ class AdminPanelProvider extends PanelProvider
             // ->topNavigation()
             ->userMenuItems([
                 'logout' => MenuItem::make()->label('Log out'),
-                // ...
             ])
             ->colors([
                 'primary' => Color::Amber,
