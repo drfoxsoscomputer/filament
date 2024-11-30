@@ -9,22 +9,34 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class TimesheetResource extends Resource
 {
     protected static ?string $model = Timesheet::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-table-cells';
+    public static function getPluralLabel(): string
+    {
+        return 'Asistencias';
+    }
+
+    protected function getTitle(): string
+    {
+        return 'Crear Asistencia';
+    }
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('user_id', Auth::user()->id);
+        return parent::getEloquentQuery()->where('user_id', Auth::user()->id)->orderBy('id', 'desc');
     }
 
     protected function getRedirectUrl(): string
@@ -37,20 +49,24 @@ class TimesheetResource extends Resource
             ->schema([
                 //
                 Forms\Components\Select::make('calendar_id')
+                    ->label('Calendario')
                     ->relationship(name: 'calendar', titleAttribute: 'name')
                     ->required(),
                 // Forms\Components\Select::make('user_id')
                 //     ->relationship(name: 'user', titleAttribute: 'name')
                 //     ->required(),
                 Forms\Components\Select::make('type')
+                    ->label('Tipo')
                     ->options([
                         'work' => 'Working',
                         'pause' => 'In Pause',
                     ])
                     ->required(),
                 Forms\Components\DateTimePicker::make('day_in')
+                    ->label('Entrada')
                     ->required(),
                 Forms\Components\DateTimePicker::make('day_out')
+                    ->label('Salida')
                     ->required(),
             ]);
     }
@@ -60,12 +76,15 @@ class TimesheetResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('calendar.name')
+                    ->label('Calendario')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.name')
+                    ->label('Usuario')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('type')
+                    ->label('Tipo')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
                         'work' => 'success',
@@ -73,18 +92,22 @@ class TimesheetResource extends Resource
                     })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('day_in')
+                    ->label('Entrada')
                     ->dateTime()
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('day_out')
+                    ->label('Salida')
                     ->dateTime()
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Creado el')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Actualizado el')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -104,8 +127,9 @@ class TimesheetResource extends Resource
             ])
 
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                    ExportBulkAction::make()
                 ]),
             ]);
     }

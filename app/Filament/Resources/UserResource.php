@@ -99,7 +99,12 @@ class UserResource extends Resource
                             ->required(),
                         TextInput::make('postal_code')
                             ->required(),
-                    ])
+                    ]),
+                Forms\Components\Select::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
             ]);
     }
 
@@ -122,7 +127,7 @@ class UserResource extends Resource
                 TextColumn::make('city.name')
                     ->sortable()
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault:false),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('address')
                     ->sortable()
                     ->searchable()
@@ -143,6 +148,10 @@ class UserResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('roles.name')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
                 //

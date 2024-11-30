@@ -21,9 +21,29 @@ class HolidayResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
 
+    // public static function getNavigationLabel(): string
+    // {
+    //     return __('Holidays');
+    // }
+
+    public static function getPluralLabel(): string
+    {
+        return __('Holidays');
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('user_id', Auth::user()->id);
+    }
+
+    protected function getTitle(): string
+    {
+        return __('Create Holiday');
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return parent::getEloquentQuery()->where('user_id', Auth::user()->id)->where('type','pending')->count();
     }
 
     public static function form(Form $form): Form
@@ -32,6 +52,7 @@ class HolidayResource extends Resource
             ->schema([
                 Forms\Components\Select::make('calendar_id')
                     ->relationship(name: 'calendar', titleAttribute: 'name')
+                    ->label(__('Calendar'))
                     ->required(),
                 // Forms\Components\Select::make('user_id')
                 //     ->relationship(name: 'user', titleAttribute: 'name')
@@ -44,6 +65,7 @@ class HolidayResource extends Resource
                 //     ])
                 //     ->required(),
                 Forms\Components\DatePicker::make('day')
+                    ->label(__('Day'))
                     ->required(),
             ]);
     }

@@ -28,5 +28,17 @@
 
     - `php artisan make:migration add_address_fields_to_users_table`
 
+- Crear mails para enviar.
 
-8.-
+    - `php artisan make:mail HolidayPending`
+
+- Crear un comando para hacer prueba de envio de emails
+    
+    - `php artisan make:command TestEmails`
+
+- Crear notificaciones de base de datos
+
+    - `php artisan make:notifications-table`
+
+---
+
